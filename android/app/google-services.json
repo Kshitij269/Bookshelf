@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "248101022666",
+    "project_id": "guest-keeper",
+    "storage_bucket": "guest-keeper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248101022666:android:b81b588b69a79e1e93bd33",
+        "android_client_info": {
+          "package_name": "com.example.guestkeeper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTOa3568X0DignpEKbDkdbOicFTULG7nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248101022666:android:839d690b15000e1993bd33",
+        "android_client_info": {
+          "package_name": "com.example.loginform"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTOa3568X0DignpEKbDkdbOicFTULG7nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248101022666:android:e86d673d0eed673e93bd33",
+        "android_client_info": {
+          "package_name": "com.example.sangy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTOa3568X0DignpEKbDkdbOicFTULG7nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
