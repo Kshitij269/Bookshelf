@@ -184,7 +184,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
                             const SizedBox(height: 5),
                             Text('Added by: ${book['author']}'),
                             const SizedBox(height: 5),
-                            Text('Price: \$${book['price'] ?? 'N/A'}'),
+                            Text('Price: \₹${book['price'] ?? 'N/A'}'),
                             Text('Quantity: ${book['quantity'] ?? '0'}'),
                             Text(
                                 'Description: ${book['description'] ?? 'No description'}'),

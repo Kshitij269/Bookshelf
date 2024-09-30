@@ -111,7 +111,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             const SizedBox(height: 5),
                             Text('Added by: ${favorite['author']}'),
                             const SizedBox(height: 5),
-                            Text('Price: \$${favorite['price'] ?? 'N/A'}'),
+                            Text('Price: \₹${favorite['price'] ?? 'N/A'}'),
                             Text('Quantity: ${favorite['quantity'] ?? '0'}'),
                             Text(
                               'Description: ${favorite['description'] ?? 'No description'}',

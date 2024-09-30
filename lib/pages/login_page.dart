@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore queries
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // For Google Sign-In
 import 'package:sangy/components/my_button.dart';
 import 'package:sangy/components/my_textfield.dart';
 import 'package:sangy/pages/forgotpasswordpage.dart';
@@ -16,14 +17,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Text editing controllers
   final emailOrUsernameController = TextEditingController(); // Updated to handle both email and username
   final passwordController = TextEditingController();
 
-  // CAPTCHA verification status
   bool captchaVerified = false;
 
-  // Method to handle CAPTCHA verification
   void onCaptchaVerify(String captchaText) {
     setState(() {
       captchaVerified = true;
@@ -33,7 +31,54 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Sign user in method
+  // Sign in with Google method
+  Future<void> signInWithGoogle() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Trigger the Google Authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        Navigator.pop(context); // Close the loading dialog
+        return; // User canceled the sign-in
+      }
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Create a new credential
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // User signed in successfully
+      Navigator.pop(context); // Close the loading dialog
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } catch (e) {
+      Navigator.pop(context); // Close the loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  // Regular sign in method (Unchanged)
   void signUserIn() async {
     if (!captchaVerified) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -85,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
 
       User? user = userCredential.user;
 
-      // Check if the email is verified
       if (user != null && !user.emailVerified) {
         Navigator.pop(context); // Close the loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,11 +139,7 @@ class _LoginPageState extends State<LoginPage> {
         );
         await user.sendEmailVerification();
       } else {
-        // User signed in successfully
         Navigator.pop(context); // Close the loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User Signed In')),
-        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -121,7 +161,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Forgot password method (Unchanged)
   void forgotPassword() async {
     Navigator.push(
       context,
@@ -129,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Wrong password message popup
   void wrongPasswordMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Invalid Credentials')),
@@ -146,7 +184,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[300],
       body: Center(
         child: SingleChildScrollView(
@@ -183,26 +220,21 @@ class _LoginPageState extends State<LoginPage> {
                 hintText: 'Email or Username',
                 obscureText: false,
               ),
-
               const SizedBox(height: 10),
-
-              // Password text field
               MyTextField(
                 controller: passwordController,
                 hintText: 'Password',
                 obscureText: true,
               ),
-
               const SizedBox(height: 10),
 
-              // Forgot password link
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     GestureDetector(
-                      onTap: forgotPassword, // Unchanged Forgot Password functionality
+                      onTap: forgotPassword,
                       child: const Text(
                         'Forgot Password?',
                         style: TextStyle(
@@ -214,11 +246,10 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 5),
 
               // Simple CAPTCHA widget
-              SimpleCaptcha(onVerify: onCaptchaVerify), // Ensure this widget is defined
+              SimpleCaptcha(onVerify: onCaptchaVerify),
 
               const SizedBox(height: 10),
 
@@ -227,10 +258,15 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: signUserIn,
                 text: "Login User",
               ),
-
               const SizedBox(height: 20),
 
-              // Not a member? Register now
+              // Google Sign-In button
+              MyButton(
+                onTap: signInWithGoogle,
+                text: "Login with Google",
+              ),
+              const SizedBox(height: 20),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

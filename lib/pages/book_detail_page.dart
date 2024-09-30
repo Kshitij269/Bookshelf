@@ -149,7 +149,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             const SizedBox(height: 8),
             // Price
             Text(
-              'Price: \$${widget.price}',
+              'Price: \₹${widget.price}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

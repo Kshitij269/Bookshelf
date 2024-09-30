@@ -270,7 +270,7 @@ class _HomePageState extends State<HomePage> {
                             const SizedBox(height: 5),
                             Text('Added by: ${book['author']}'),
                             const SizedBox(height: 5),
-                            Text('Price: \$${book['price'] ?? 'N/A'}'),
+                            Text('Price: \₹${book['price'] ?? 'N/A'}'),
                             Text('Quantity: ${book['quantity'] ?? '0'}'),
                           ],
                         ),
