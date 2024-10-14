@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sangy/pages/view_chat_page.dart';
 
 class BookDetailPage extends StatefulWidget {
   final String title;
@@ -34,6 +35,45 @@ class _BookDetailPageState extends State<BookDetailPage> {
   void initState() {
     super.initState();
     _checkFavoriteStatus(); // Check the initial favorite status
+  }
+
+  Future<void> _navigateToChat() async {
+    final chatCollection = FirebaseFirestore.instance.collection('chats');
+
+    // Check if a chat already exists between the current user and the seller
+    final chatQuery = await chatCollection
+        .where('participants', arrayContains: user!.email)
+        .get();
+
+    String? chatId;
+
+    for (var doc in chatQuery.docs) {
+      if ((doc.data()['participants'] as List<dynamic>).contains(widget.author)) {
+        chatId = doc.id;
+        break;
+      }
+    }
+
+    if (chatId == null) {
+      // If chat doesn't exist, create a new one
+      final newChatDoc = await chatCollection.add({
+        'participants': [user!.email, widget.author],
+        'createdAt': Timestamp.now(),
+        'bookTitle': widget.title,
+      });
+      chatId = newChatDoc.id;
+    }
+
+    // Navigate to ChatPage with chatId and seller's email (author)
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          chatId: chatId!,
+          otherUserEmail: widget.author, // Pass the seller's email
+        ),
+      ),
+    );
   }
 
   Future<void> _checkFavoriteStatus() async {
@@ -175,6 +215,27 @@ class _BookDetailPageState extends State<BookDetailPage> {
               textAlign: TextAlign.justify,
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: ElevatedButton(
+          onPressed: _navigateToChat,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            'Contact Seller',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );

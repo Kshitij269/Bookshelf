@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sangy/pages/addbook_page.dart';
+import 'package:sangy/pages/chat_list_page.dart';
 import 'package:sangy/pages/editbook_page.dart';
 import 'package:sangy/pages/favourite_page.dart';
 import 'package:sangy/pages/login_page.dart';
@@ -18,7 +19,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   final CollectionReference booksRef =
-      FirebaseFirestore.instance.collection('books');
+  FirebaseFirestore.instance.collection('books');
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   Future<void> _addBook(String title, String imageUrl, String description,
       String price, String quantity) async {
@@ -117,6 +120,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         actions: [
           IconButton(
+            icon: const Icon(Icons.chat_bubble_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatListPage()),
+              );
+            },
+          ),
+          IconButton(
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => FavoritesPage()));
@@ -133,6 +145,30 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         backgroundColor: Colors.blue,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search for a book by name...',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query.toLowerCase();
+                });
+              },
+            ),
+          ),
+        ),
       ),
       drawer: Drawer(
         elevation: 4,
@@ -210,10 +246,17 @@ class _HomePageState extends State<HomePage> {
             );
           }
 
+          // Filter the books based on the search query
+          var filteredBooks = snapshot.data!.docs.where((bookDoc) {
+            var book = bookDoc.data() as Map<String, dynamic>;
+            var bookTitle = book['title'].toString().toLowerCase();
+            return bookTitle.contains(_searchQuery);
+          }).toList();
+
           return ListView(
-            children: snapshot.data!.docs.map((bookDoc) {
+            children: filteredBooks.map((bookDoc) {
               Map<String, dynamic> book =
-                  bookDoc.data() as Map<String, dynamic>;
+              bookDoc.data() as Map<String, dynamic>;
               String bookId = bookDoc.id;
               bool isUserBook = book['author'] == user.email;
 
@@ -246,18 +289,18 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       book['imageUrl'] != null
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                book['imageUrl'],
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
-                            )
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          book['imageUrl'],
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                           : const Icon(
-                              Icons.book,
-                              size: 80,
-                            ),
+                        Icons.book,
+                        size: 80,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
