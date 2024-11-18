@@ -140,7 +140,7 @@ class _AddBookPageState extends State<AddBookPage> {
         ),
         backgroundColor: Colors.grey[900],
       ),
-      body: SingleChildScrollView(
+      body: SingleChildScrollView(  // Wrap the main column in SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -159,79 +159,35 @@ class _AddBookPageState extends State<AddBookPage> {
                 ),
               TextField(
                 controller: _bookTitleController,
-                decoration: InputDecoration(
-                  label: RichText(
-                    text: const TextSpan(
-                      text: 'Book Title ',
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: '*',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Book Title (*Mandatory)',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _descriptionController,
-                decoration: InputDecoration(
-                  label: RichText(
-                    text: const TextSpan(
-                      text: 'Description ',
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: '*',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Description (*Mandatory)',
+                  border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _priceController,
-                decoration: InputDecoration(
-                  label: RichText(
-                    text: const TextSpan(
-                      text: 'Price ',
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: '*',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Price (*Mandatory)',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
               TextField(
                 controller: _quantityController,
-                decoration: InputDecoration(
-                  label: RichText(
-                    text: const TextSpan(
-                      text: 'Quantity ',
-                      style: TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: '*',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Quantity (*Mandatory)',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
               ),

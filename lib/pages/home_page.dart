@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sangy/pages/addbook_page.dart';
+import 'package:sangy/pages/addbook_page1.dart';
 import 'package:sangy/pages/chat_list_page.dart';
 import 'package:sangy/pages/editbook_page.dart';
 import 'package:sangy/pages/favourite_page.dart';
@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   final CollectionReference booksRef =
-  FirebaseFirestore.instance.collection('books');
+      FirebaseFirestore.instance.collection('books');
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -254,11 +254,16 @@ class _HomePageState extends State<HomePage> {
           }).toList();
 
           return ListView(
-            children: filteredBooks.map((bookDoc) {
+            children: filteredBooks
+                // Filter out books authored by the current user
+                .where((bookDoc) {
               Map<String, dynamic> book =
-              bookDoc.data() as Map<String, dynamic>;
+                  bookDoc.data() as Map<String, dynamic>;
+              return book['author'] != user.email;
+            }).map((bookDoc) {
+              Map<String, dynamic> book =
+                  bookDoc.data() as Map<String, dynamic>;
               String bookId = bookDoc.id;
-              bool isUserBook = book['author'] == user.email;
 
               return GestureDetector(
                 onTap: () => _navigateToBookDetailPage(
@@ -289,18 +294,18 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       book['imageUrl'] != null
                           ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          book['imageUrl'],
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      )
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                book['imageUrl'],
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                            )
                           : const Icon(
-                        Icons.book,
-                        size: 80,
-                      ),
+                              Icons.book,
+                              size: 80,
+                            ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
@@ -318,37 +323,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      if (isUserBook) ...[
-                        Container(
-                          width: 60,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                iconSize: 20,
-                                onPressed: () {
-                                  _navigateToEditBookPage(
-                                    bookId,
-                                    book['title'],
-                                    book['imageUrl'],
-                                    book['description'] ?? '',
-                                    book['price'] ?? '',
-                                    book['quantity'] ?? '',
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                iconSize: 20,
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  _deleteBook(bookId);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      // Removed the conditional widget for user books
                     ],
                   ),
                 ),
